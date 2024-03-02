@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        /* Optional: CSS for styling the form */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        form {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensures padding and border are included in the element's total width */
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .register-link,.forgot-password-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <form method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your Username or Email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+        {% if messages %}
+            <p style="color: red;">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </p>
+        {% endif %}
+        <input type="submit" value="Login">
+    
+        <!--<div class="register-link">
+            Don't have an account? <a href="/register">Register now</a>
+        Don't have an account? <a href="./register.html">Register now</a>
+
+        </div>
+        <div class="forgot-password-link">
+            <a href="/password_reset">Forgot your password?</a>
+            <a href="./reset.html">Forgot your password?</a>
+        </div>-->
+    </form>
+    
+</body>
+</html>

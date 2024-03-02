@@ -1,0 +1,27 @@
+<div class="sidenav">
+    <a href="/">Home</a>
+    <a href="#" class="submenu-toggle">Settings</a>
+    <div class="submenu">
+        <a href="/categories/">Categories</a>
+        <a href="/blog-post2/">Publishers</a>
+        <a href="#blog-post3">Books</a>
+    </div>
+    <a href="#services">Expenses</a>
+    <a href="#blog">Reports</a>
+    <a href="/logout">Logout</a>
+</div>
+<script>
+    // JavaScript for toggling submenus
+    document.querySelectorAll('.submenu-toggle').forEach(item => {
+        item.addEventListener('click', event => {
+            let submenu = item.nextElementSibling;
+            if (submenu.style.display === "block") {
+                submenu.style.display = "none";
+                console.log('test')
+            } else {
+                submenu.style.display = "block";
+                console.log('test1')
+            }
+        });
+    });
+</script>
