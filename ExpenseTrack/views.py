@@ -38,5 +38,5 @@ def logout_auth(request):
   logout(request)
   return redirect('/login')
 
-def category(request):
-    return render(request,'categories.html')
+def settings(request):
+    return render(request,'settings.html')
