@@ -2,12 +2,12 @@ from django.db import models
 
 # Create your models here.
 class categoryModel(models.Model):
-    category = models.CharField(max_length=150)
+    category = models.CharField(max_length=150, unique=True)
     def __str__(self):
         return self.category
 
 class publisherModel(models.Model):
-    publisher = models.CharField(max_length=255)
+    publisher = models.CharField(max_length=255, unique=True)
     def __str__(self):
         return self.publisher
 
@@ -17,6 +17,9 @@ class bookModel(models.Model):
     author = models.CharField(max_length=255)
     category = models.ForeignKey(categoryModel,on_delete = models.CASCADE)
     publisher = models.ForeignKey(publisherModel,on_delete = models.CASCADE)
+    class Meta:
+        # Define unique constraints for the combination of fields
+        unique_together = [['title','author']]
     def __str__(self):
         return self.title
 

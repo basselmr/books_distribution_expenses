@@ -7,60 +7,14 @@
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
-        .tab-container {
-            margin: 25px;
-            margin-left: 220px;
-
-            border: solid 1px black;
-
-        }
-        .tab-link {
-            width: 200px;
-            align-items: center;
-        }
+        
     </style>
 </head>
 <body>
     {% csrf_token %}
     {% include 'sidenav.html' %}
-    <div class="tab-container">
-        <div style="text-align: center;">
-            <button class="tab-link" onclick="openTab(event, 'tab1')">Categories</button>
-            <button class="tab-link" onclick="openTab(event, 'tab2')">Publishers</button>
-            <button class="tab-link" onclick="openTab(event, 'tab3')">Books</button>
-        </div>
-        
-    
-        <div id="tab1" class="tab">
-            <h2>Tab 1 Content</h2>
-            <p>This is the content of tab 1.</p>
-        </div>
-    
-        <div id="tab2" style="display: none;" class="tab">
-            <h2>Tab 2 Content</h2>
-            <p>This is the content of tab 2.</p>
-        </div>
-    
-        <div id="tab3" style="display: none;" class="tab">
-            <h2>Tab 3 Content</h2>
-            <p>This is the content of tab 3.</p>
-        </div>
-    </div>
-    
-    <script>
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tab-link");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-    </script>
+    <div>
+        <h1>Categories</h1>
+    </div>  
 </body>
 </html>

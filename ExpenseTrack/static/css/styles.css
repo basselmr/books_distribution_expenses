@@ -13,6 +13,7 @@ body{
     left: 0;
     background-color: #111;
     padding-top: 20px;
+    
 }
 
 .sidenav a {
@@ -21,6 +22,7 @@ body{
     font-size: 18px;
     color: #818181;
     display: block;
+    text-align: center;
 }
 
 .sidenav a:hover {
