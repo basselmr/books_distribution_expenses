@@ -58,9 +58,11 @@ def categories(request,category_id=None):
         elif request.method == 'POST':
             print (request.POST.get('category'))
             if request.POST.get('category'):
-                return HttpResponse("1")
+                try:
+                    return HttpResponse("1",status=201)
+                except Exception as e:
+                    return HttpResponse("Internal Server Error: " + str(e), status=500)
             else:
-                return HttpResponse("2")
-
+                return HttpResponse("2",status=400)
     else:
         return HttpResponse(f"GO ON {category_id}")

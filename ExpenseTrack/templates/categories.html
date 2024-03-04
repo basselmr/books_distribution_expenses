@@ -15,27 +15,24 @@
     {% include 'sidenav.html' %}
     <div class="main-content">
         <h1>Categories</h1>
-            <div style="display: block;margin: 3px;">
+            <div style="display: block;margin: 3px;margin-bottom: 10px;">
                 <input id="categorySearch" type="text">
                 <button onclick="search()">Search</button>
             </div>
-           
-            {% for category in categoryList %}
-            <div id="category{{category.id}}" style="display: block;margin: 3px;">
-                <label style="display: none;">{{category.id}}</label>
-                <input id="cat_{{category.id}}_name" type="text" value="{{category.category}}" >
-                <button>Update</button>
-                <button onclick="getParentId(this)">Delete</button>
-            </div>
+            <div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px;">
+                {% for category in categoryList %}
+                <div id="category{{category.id}}" style="display: block;margin: 3px;">
+                    <label style="display: none;">{{category.id}}</label>
+                    <input id="cat_{{category.id}}_name" type="text" value="{{category.category}}" >
+                    <button>Update</button>
+                    <button onclick="getParentId(this)">Delete</button>
+                </div>
             {% endfor %}
-
+            </div>
             <div id="category_new" style="display: block;margin: 3px;">
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="text" value="{{category.category}}" name="category" >
-                    <button type="submit">ADD</button>
-                </form>
-                
+                    <input type="text" id="newCategoryName" value="{{category.category}}" name="category" >
+                    <button onclick="addNewCategory()">ADD</button>
+                    <p id="newCatErr" style="margin: 0;color: red;font-size: 12px;"></p>
             </div>
     </div>
     <script>
@@ -56,6 +53,7 @@
                 document.getElementById("categorySearch").value = decodeURIComponent(searchValue);
             }
         }
+        
         function search() {
             var searchValue = document.getElementById("categorySearch").value
             console.log(searchValue)
@@ -69,10 +67,61 @@
                 
             } else {
                 window.location.href = "/categories"
+            }           
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
             }
-            
+            return cookieValue;
         }
 
+        function addNewCategory () {
+            const inputText = document.getElementById("newCategoryName").value;
+            console.log(inputText);
+            if (!inputText.trim()) {
+                console.log("New category title is required.");
+                document.getElementById("newCatErr").innerHTML="New category title is required."
+                return
+            } else {
+                const regex = /^[a-zA-Z0-9\s]+$/;
+                if (!regex.test(inputText)) {
+                    document.getElementById("newCatErr").innerHTML="Only numeric, alphabetic characters accepted."
+                    console.log("Only numeric, alphabetic characters accepted.");
+                    return
+                } else {
+                    const csrftoken = getCookie('csrftoken');
+                    console.log(csrftoken)
+                    const form = new FormData();
+                    form.append("category", inputText);
+                    console.log(form);
+                    const options = {
+                        method: 'POST',
+                        headers: {
+                            'cookie': 'csrftoken='+csrftoken,
+                            'X-CSRFToken': csrftoken,
+                        }
+                    };
+                    options.body = form;
+                    fetch('/categories', options)
+                    .then(response => response.text())
+                    .then(response => console.log(response))
+                    .catch(err => console.error(err));
+
+                }
+            }
+        }
+    
     </script>
 </body>
 </html>
