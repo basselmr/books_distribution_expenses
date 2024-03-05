@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Book Expenses Track</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         
@@ -19,23 +19,62 @@
                 <input id="categorySearch" type="text">
                 <button onclick="search()">Search</button>
             </div>
-            <div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px;">
+            <div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px; height: 50vh;overflow:auto;">
                 {% for category in categoryList %}
-                <div id="category{{category.id}}" style="display: block;margin: 3px;">
+                <div style="display: block;margin: 3px;">
                     <label style="display: none;">{{category.id}}</label>
-                    <input id="cat_{{category.id}}_name" type="text" value="{{category.category}}" >
-                    <button>Update</button>
-                    <button onclick="getParentId(this)">Delete</button>
+                    <input type="text" id="categoryInput" value="{{category.category}}" >
+                    <form method="post" action="/categories/{{category.id}}" onsubmit="return updateAction(this);" style="display: inline-block;">
+                        {% csrf_token %}
+                        <input type="hidden" name="method" value="update">
+                        <button type="submit" class="delete-button">Save</button>
+                    </form>
+                    <form method="post" action="/categories/{{category.id}}" onsubmit="return deleteAction(this,'{{category.category}}');" style="display: inline-block;">
+                        {% csrf_token %}
+                        <input type="hidden" name="method" value="delete">
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                    <!--<a id="delete {{category.category}}" href="/category_delete/{{ category.id }}" class="delete-button">Delete</a>-->
                 </div>
             {% endfor %}
             </div>
             <div id="category_new" style="display: block;margin: 3px;">
                     <input type="text" id="newCategoryName" value="{{category.category}}" name="category" >
                     <button onclick="addNewCategory()">ADD</button>
-                    <p id="newCatErr" style="margin: 0;color: red;font-size: 12px;"></p>
+                    <p id="newCatErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
             </div>
     </div>
     <script>
+        function deleteAction(form,category) {
+            if (confirm('Are you sure you want to delete category "' + category + '"?')) {
+                return true; // Submit the form
+            }
+            return false; // Cancel form submission
+        }
+        function updateAction(form){
+            try {
+                var categoryInput = form.parentElement.querySelector('#categoryInput');
+                console.log(categoryInput.value)
+                const regex = /^[a-zA-Z0-9\s]+$/;
+                if (!regex.test(categoryInput.value)) {
+                    alert("Only numeric, alphabetic characters accepted.");
+                    return false;
+                } else {
+                    var newInput = document.createElement('input');
+                    newInput.type = 'hidden';
+                    newInput.name = 'newCategoryName'; // Set the name attribute
+                    newInput.value = categoryInput.value; // Set a default value if needed
+                    // Append the new input element to the form
+                    form.appendChild(newInput);
+                    console.log(form)
+                    return true;
+                }               
+            } catch (error) {
+                console.error(error); // Log any errors that occur
+            }
+            return false;
+        }
+
         function getParentId(button) {
         // Get the parent element ID when the button is clicked
         var inputValue = button.parentElement.querySelector('input[type="text"]').value;
@@ -102,26 +141,41 @@
                 } else {
                     const csrftoken = getCookie('csrftoken');
                     console.log(csrftoken)
-                    const form = new FormData();
-                    form.append("category", inputText);
-                    console.log(form);
                     const options = {
                         method: 'POST',
                         headers: {
-                            'cookie': 'csrftoken='+csrftoken,
-                            'X-CSRFToken': csrftoken,
-                        }
+                            cookie: 'csrftoken='+csrftoken,
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: `{"category":"${inputText}"}`
                     };
-                    options.body = form;
                     fetch('/categories', options)
-                    .then(response => response.text())
-                    .then(response => console.log(response))
-                    .catch(err => console.error(err));
-
+    .then(response => {
+        if (response.status === 201) {
+            // Handle success with status 201
+            return response.text(); // Read response as text
+        } else {
+            // Handle other status codes
+            return response.json(); // Parse JSON response
+        }
+    })
+    .then(data => {
+        // Handle response data for other status codes
+        if (typeof data === 'string') {
+            // If response is HTML page, replace current page content with it
+            document.documentElement.innerHTML = data;
+        } else {
+            // Handle JSON response
+            console.log(data);
+            document.getElementById("newCatErr").innerHTML = data.error;
+        }
+    })
+    .catch(err => console.error(err)); // Handle fetch error
                 }
             }
         }
-    
+   
     </script>
 </body>
 </html>
