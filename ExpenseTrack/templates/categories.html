@@ -6,24 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Expenses Track</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <style>
-        
-    </style>
+    <script src="{% static 'JS/script.js' %}"></script>
 </head>
 <body>
     {% csrf_token %}
     {% include 'sidenav.html' %}
     <div class="main-content">
         <h1>Categories</h1>
-            <div style="display: block;margin: 3px;margin-bottom: 10px;">
-                <input id="categorySearch" type="text">
-                <button onclick="search()">Search</button>
+            <div  style="display: block;margin: 3px;margin-bottom: 10px;">
+                <input id="searchedText" type="text" value="{{searchedText}}">
+                <button onclick="search('/categories','category=')">Search</button>
             </div>
             <div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px; height: 50vh;overflow:auto;">
                 {% for category in categoryList %}
                 <div style="display: block;margin: 3px;">
                     <label style="display: none;">{{category.id}}</label>
-                    <input type="text" id="categoryInput" value="{{category.category}}" >
+                    <input type="text" id="rowInput" value="{{category.category}}" >
                     <form method="post" action="/categories/{{category.id}}" onsubmit="return updateAction(this);" style="display: inline-block;">
                         {% csrf_token %}
                         <input type="hidden" name="method" value="update">
@@ -34,148 +32,23 @@
                         <input type="hidden" name="method" value="delete">
                         <button type="submit" class="delete-button">Delete</button>
                     </form>
-                    <!--<a id="delete {{category.category}}" href="/category_delete/{{ category.id }}" class="delete-button">Delete</a>-->
                 </div>
             {% endfor %}
             </div>
             <div id="category_new" style="display: block;margin: 3px;">
-                    <input type="text" id="newCategoryName" value="{{category.category}}" name="category" >
-                    <button onclick="addNewCategory()">ADD</button>
-                    <p id="newCatErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
+                    <input type="text" id="newRecord" value="{{category.category}}" name="category" >
+                    <button onclick="addNew('/categories','category')">ADD</button>
+                    <p id="newErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
             </div>
     </div>
     <script>
-        function deleteAction(form,category) {
-            if (confirm('Are you sure you want to delete category "' + category + '"?')) {
-                return true; // Submit the form
-            }
-            return false; // Cancel form submission
-        }
-        function updateAction(form){
-            try {
-                var categoryInput = form.parentElement.querySelector('#categoryInput');
-                console.log(categoryInput.value)
-                const regex = /^[a-zA-Z0-9\s]+$/;
-                if (!regex.test(categoryInput.value)) {
-                    alert("Only numeric, alphabetic characters accepted.");
-                    return false;
-                } else {
-                    var newInput = document.createElement('input');
-                    newInput.type = 'hidden';
-                    newInput.name = 'newCategoryName'; // Set the name attribute
-                    newInput.value = categoryInput.value; // Set a default value if needed
-                    // Append the new input element to the form
-                    form.appendChild(newInput);
-                    console.log(form)
-                    return true;
-                }               
-            } catch (error) {
-                console.error(error); // Log any errors that occur
-            }
-            return false;
-        }
-
-        function getParentId(button) {
-        // Get the parent element ID when the button is clicked
-        var inputValue = button.parentElement.querySelector('input[type="text"]').value;
-        var confirmation = confirm("Are you sure you want to delete this category '" + inputValue + "' ?");
-        var parentID = button.parentElement.id;
-        
-        alert("Parent element ID:"+ parentID);
-        alert (inputValue)
-        }
-        
         window.onload = function() {
             var urlParams = new URLSearchParams(window.location.search);
             var searchValue = urlParams.get('category');
             if (searchValue) {
-                document.getElementById("categorySearch").value = decodeURIComponent(searchValue);
+                document.getElementById("searchedText").value = decodeURIComponent(searchValue);
             }
         }
-        
-        function search() {
-            var searchValue = document.getElementById("categorySearch").value
-            console.log(searchValue)
-
-            if (searchValue){
-                console.log(searchValue)
-            }
-           
-            if (searchValue){
-                window.location.href = "/categories" + "?" + "category=" + encodeURIComponent(searchValue);
-                
-            } else {
-                window.location.href = "/categories"
-            }           
-        }
-        
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        function addNewCategory () {
-            const inputText = document.getElementById("newCategoryName").value;
-            console.log(inputText);
-            if (!inputText.trim()) {
-                console.log("New category title is required.");
-                document.getElementById("newCatErr").innerHTML="New category title is required."
-                return
-            } else {
-                const regex = /^[a-zA-Z0-9\s]+$/;
-                if (!regex.test(inputText)) {
-                    document.getElementById("newCatErr").innerHTML="Only numeric, alphabetic characters accepted."
-                    console.log("Only numeric, alphabetic characters accepted.");
-                    return
-                } else {
-                    const csrftoken = getCookie('csrftoken');
-                    console.log(csrftoken)
-                    const options = {
-                        method: 'POST',
-                        headers: {
-                            cookie: 'csrftoken='+csrftoken,
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrftoken
-                        },
-                        body: `{"category":"${inputText}"}`
-                    };
-                    fetch('/categories', options)
-    .then(response => {
-        if (response.status === 201) {
-            // Handle success with status 201
-            return response.text(); // Read response as text
-        } else {
-            // Handle other status codes
-            return response.json(); // Parse JSON response
-        }
-    })
-    .then(data => {
-        // Handle response data for other status codes
-        if (typeof data === 'string') {
-            // If response is HTML page, replace current page content with it
-            document.documentElement.innerHTML = data;
-        } else {
-            // Handle JSON response
-            console.log(data);
-            document.getElementById("newCatErr").innerHTML = data.error;
-        }
-    })
-    .catch(err => console.error(err)); // Handle fetch error
-                }
-            }
-        }
-   
     </script>
 </body>
 </html>
