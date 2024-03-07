@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout,login
 from .models import categoryModel,publisherModel
 import json
+from django.views.generic import ListView
 
 # Create your views here.
 def home(request):
@@ -183,3 +184,20 @@ def publishers(request,publisher_id=None):
                     # Redirect back to the same page or any desired page
                     return redirect("/publishers")
         return JsonResponse({"error": "Method Not Allowed"}, status=405)
+
+#class test(ListView):
+#    model = publisherModel
+#    context_object_name = "book_list"
+#    queryset = publisherModel.objects.all()
+#    template_name = "books.html"
+
+def books(request,book_id=None):
+    context={}
+    categories = categoryModel.objects.values_list('category', flat=True)
+    context['categoris']=categories
+    publishers = publisherModel.objects.values_list('publisher', flat=True)
+    context['publishers']=publishers
+    if book_id == None :
+        return render(request,'books.html',context,status=200)
+    else:
+        return HttpResponse('single Book',context,status=200)

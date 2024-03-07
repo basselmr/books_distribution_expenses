@@ -9,4 +9,6 @@ urlpatterns = [
     path('categories/<str:category_id>',views.categories,name="single category"),
     path('publishers',views.publishers,name="publisher"),
     path('publishers/<str:publisher_id>',views.publishers,name="single publisher"),
+    path('books',views.books,name="books"),
+    path('books/<str:book_id>',views.books,name="single book"),
 ]

@@ -1,54 +1,44 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Expenses Track</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script src="{% static 'JS/script.js' %}"></script>
-</head>
-<body>
-    {% csrf_token %}
-    {% include 'sidenav.html' %}
-    <div class="main-content">
-        <h1>Categories</h1>
-            <div  style="display: block;margin: 3px;margin-bottom: 10px;">
-                <input id="searchedText" type="text" value="{{searchedText}}">
-                <button onclick="search('/categories','category=')">Search</button>
-            </div>
-            <div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px; height: 50vh;overflow:auto;">
-                {% for category in categoryList %}
-                <div style="display: block;margin: 3px;">
-                    <label style="display: none;">{{category.id}}</label>
-                    <input type="text" id="rowInput" value="{{category.category}}" >
-                    <form method="post" action="/categories/{{category.id}}" onsubmit="return updateAction(this);" style="display: inline-block;">
-                        {% csrf_token %}
-                        <input type="hidden" name="method" value="update">
-                        <button type="submit" class="delete-button">Save</button>
-                    </form>
-                    <form method="post" action="/categories/{{category.id}}" onsubmit="return deleteAction(this,'{{category.category}}');" style="display: inline-block;">
-                        {% csrf_token %}
-                        <input type="hidden" name="method" value="delete">
-                        <button type="submit" class="delete-button">Delete</button>
-                    </form>
-                </div>
-            {% endfor %}
-            </div>
-            <div id="category_new" style="display: block;margin: 3px;">
-                    <input type="text" id="newRecord" value="{{category.category}}" name="category" >
-                    <button onclick="addNew('/categories','category')">ADD</button>
-                    <p id="newErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
-            </div>
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<h1>Categories</h1>
+<div  style="display: block;margin: 3px;margin-bottom: 10px;">        
+    <input id="searchedText" type="text" value="{{searchedText}}">
+    <button onclick="search('/categories','category=')">Search</button>
+</div>
+<div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px; height: 50vh;overflow:auto;">
+    {% for category in categoryList %}
+    <div style="display: block;margin: 3px;">
+        <label style="display: none;">{{category.id}}</label>
+        <input type="text" id="rowInput" value="{{category.category}}" >
+        <form method="post" action="/categories/{{category.id}}" onsubmit="return updateAction(this);" style="display: inline-block;">
+            {% csrf_token %}
+            <input type="hidden" name="method" value="update">
+            <button type="submit" class="delete-button">Save</button>
+        </form>
+        <form method="post" action="/categories/{{category.id}}" onsubmit="return deleteAction(this,'{{category.category}}');" style="display: inline-block;">
+            {% csrf_token %}
+            <input type="hidden" name="method" value="delete">
+            <button type="submit" class="delete-button">Delete</button>
+        </form>
     </div>
-    <script>
-        window.onload = function() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var searchValue = urlParams.get('category');
-            if (searchValue) {
-                document.getElementById("searchedText").value = decodeURIComponent(searchValue);
-            }
+    {% endfor %}
+</div>
+<div id="category_new" style="display: block;margin: 3px;">
+    <input type="text" id="newRecord" value="{{category.category}}" name="category" >
+    <button onclick="addNew('/categories','category')">ADD</button>
+    <p id="newErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    window.onload = function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var searchValue = urlParams.get('category');
+        if (searchValue) {
+            document.getElementById("searchedText").value = decodeURIComponent(searchValue);
         }
-    </script>
-</body>
-</html>
+    }
+</script>
+{% endblock %}

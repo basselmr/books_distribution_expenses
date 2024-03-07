@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+    .autocomplete {
+    position: relative;
+    display: inline-block;
+}
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-top: none;
+    z-index: 99;
+    /* Set width to match the width of the input field */
+    width: 100%;
+    background-color: #fff;
+}
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.autocomplete-item:hover {
+    background-color: #e9e9e9;
+}
+</style>
+
+{% endblock %}
+
+{% block mainContent %}
+<h1>Books</h1>
+<div  style="display: block;margin: 3px;margin-bottom: 10px;">
+    <input id="searchedText" type="text" value="{{searchedText}}">
+    <button onclick="search('/publishers','publisher=')">Search</button>
+</div>
+<div style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 20px;border-radius: 7px; height: 40vh;overflow:auto;">
+    
+</div>
+<h3>Add new book</h3>
+<div id="category_new" style="margin: 10px 0;border: solid 1px rgb(134, 112, 233);padding: 3px;border-radius: 7px;
+display: flex;flex-direction: row;flex-wrap: wrap;">
+    
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title">
+    <label for="author">Author:</label>
+    <input type="text" id="author" name="author">
+    <label for="category">Category:</label>
+    <input type="text" id="category" name="category">
+    <label for="publisher">Publisher:</label>
+    <input type="text" id="publisher" name="publisher">
+    <!--<label for="subtitle">Subtitle:</label><br>-->
+    <!--<textarea id="subtitle" name="subtitle"></textarea>
+    <input type="submit" value="Submit">-->
+    <p id="newErr" style="margin: 0;color: red;font-size: 12px;">{{success}}</p>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    
+
+function initializeAutocomplete() {
+    autocomplete(document.getElementById("category"), {{ categories|safe }});
+    autocomplete(document.getElementById("publisher"), {{ publishers|safe }});
+}
+
+// Call the initializeAutocomplete function when the DOM is loaded
+document.addEventListener("DOMContentLoaded", function() {
+    initializeAutocomplete();
+});
+</script>
+{% endblock %}
